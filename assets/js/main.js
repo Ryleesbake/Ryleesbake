@@ -161,7 +161,9 @@
   var booked = document.getElementById("booked-details");
   if (booked) {
     var wanted = new URLSearchParams(location.search).get("class");
-    var c = classes.filter(function (x) { return x.id === wanted; })[0] || upcoming[0];
+    // Only show class-specific details when the Square redirect names the date.
+    // Without ?class=, keep the page generic rather than guessing a date.
+    var c = classes.filter(function (x) { return x.id === wanted; })[0];
     var a = info.address || {};
     var oneLine = a.street + ", " + a.city + ", " + a.state + " " + a.zip;
 
@@ -169,7 +171,16 @@
       document.querySelector("[data-when]").textContent = longDate(c) + " · " + timeRange(c);
       document.querySelector("[data-class-name]").textContent = c.name + (c.title ? ": " + c.title : "");
       document.querySelector("[data-bring]").textContent = c.bring || "";
-      if (!wanted) document.querySelector("[data-when-note]").textContent = "If you booked a different date, your Square receipt shows it.";
+      var prepList = document.querySelector("[data-prep]");
+      if (prepList && c.prep && c.prep.length) {
+        c.prep.forEach(function (item) {
+          var li = document.createElement("li"); li.textContent = item; prepList.appendChild(li);
+        });
+        document.querySelector("[data-prep-block]").hidden = false;
+      }
+      if (c.afterClass) document.querySelector("[data-after]").textContent = c.afterClass;
+      var nextCard = document.querySelector("[data-next-class]");
+      if (nextCard && c.type === "201") nextCard.hidden = true;
     }
     document.querySelector("[data-address]").textContent = oneLine;
     document.querySelector("[data-directions]").href =

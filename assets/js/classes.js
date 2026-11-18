@@ -22,27 +22,29 @@ window.RB_CLASS_TYPES = {
     title: "Sourdough Fundamentals",
     price: 90,
     forWho: "For complete beginners",
-    bring: "Nothing but yourself. Everything is provided except a Dutch oven, which you'll need at home to bake your loaf."
+    bring: "Nothing but yourself. Everything is provided except a Dutch oven, which you'll need at home to bake your loaf.",
+    // Shown on the booked page under "Before class".
+    prep: [
+      "Make sure you have a Dutch oven at home. You'll bake the dough you take home in it."
+    ],
+    // Shown on the booked page under "After class".
+    afterClass: "Bake your loaf, then share how it turned out. The ideas below help this small business grow more than anything else."
   },
   "201": {
     name: "Sourdough 201",
     title: "Discard Recipes & Everyday Baking",
     price: 80,
     forWho: "For 101 grads, or anyone already keeping a starter",
-    bring: "Your Sourdough 101 kit and your starter, or the equivalent supplies if you have your own setup."
+    bring: "Your Sourdough 101 kit (mixing bowl, proofing basket and tea towel) and your starter in a lidded jar, or the equivalent supplies if you have your own setup.",
+    prep: [
+      "The night before class, feed your starter so it's active and bubbly when you arrive. You'll use it to mix your own pizza dough.",
+      "Pack your Sourdough 101 kit and your starter so you don't forget them in the morning."
+    ],
+    afterClass: "Bake your cinnamon roll that evening and use your pizza dough within 3 days (keep it in the fridge). Then share how it turned out. The ideas below help this small business grow more than anything else."
   }
 };
 
 window.RB_CLASSES = [
-  {
-    id: "2026-11-14",
-    type: "201",
-    start: "11:30",
-    end: "14:00",
-    capacity: 10,
-    spotsLeft: 5,
-    checkout: "https://square.link/u/RKozbW85"
-  },
   {
     id: "2026-12-12",
     type: "101",
@@ -51,6 +53,51 @@ window.RB_CLASSES = [
     capacity: 8,
     spotsLeft: 8,
     checkout: "https://square.link/u/u55EVCgX"
+  },
+  {
+    id: "2027-01-16",
+    type: "101",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8,
+    spotsLeft: 8,
+    checkout: "https://square.link/u/HLU89BJU"
+  },
+  {
+    id: "2027-03-13",
+    type: "101",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8,
+    spotsLeft: 8,
+    checkout: "https://square.link/u/OfmqIkkx"
+  },
+  {
+    id: "2027-04-03",
+    type: "101",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8,
+    spotsLeft: 8,
+    checkout: "https://square.link/u/VfluXijg"
+  },
+  {
+    id: "2027-05-15",
+    type: "101",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8,
+    spotsLeft: 8,
+    checkout: "https://square.link/u/83UuduOD"
+  },
+  {
+    id: "2027-06-05",
+    type: "101",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8,
+    spotsLeft: 8,
+    checkout: "https://square.link/u/mt5ob2nq"
   }
 ];
 
