@@ -66,10 +66,9 @@
     seat: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
   };
 
+  // Only a "Sold out" badge; open classes don't show a seat count.
   function spotsBadge(c) {
-    if (c.spotsLeft <= 0) return '<span class="badge badge--calm">Sold out</span>';
-    if (c.spotsLeft <= Math.max(3, Math.ceil(c.capacity / 2))) return '<span class="badge">Only ' + c.spotsLeft + " spot" + (c.spotsLeft === 1 ? "" : "s") + " left</span>";
-    return '<span class="badge badge--calm">' + c.spotsLeft + " spots open</span>";
+    return c.soldOut ? '<span class="badge badge--calm">Sold out</span>' : "";
   }
 
   /* ---------- Home page: class cards ---------- */
@@ -84,7 +83,7 @@
     } else {
       list.innerHTML = upcoming.map(function (c) {
         var start = at(c.id, c.start);
-        var soldOut = c.spotsLeft <= 0;
+        var soldOut = !!c.soldOut;
         var cta = soldOut
           ? '<a class="btn btn--ghost" href="mailto:' + esc(info.email) + "?subject=" + encodeURIComponent("Waitlist for " + shortDate(c)) + '">Join the waitlist</a>'
           : '<a class="btn" href="' + esc(c.checkout) + '" data-class="' + esc(c.id) + '">Reserve my spot</a>';
@@ -112,11 +111,10 @@
 
   // "Next class" pill in the hero
   var next = document.getElementById("next-class");
-  var firstOpen = upcoming.filter(function (c) { return c.spotsLeft > 0; })[0];
+  var firstOpen = upcoming.filter(function (c) { return !c.soldOut; })[0];
   if (next && firstOpen) {
     next.querySelector("[data-next-text]").textContent =
-      "Next class: " + shortDate(firstOpen) + " · " +
-      (firstOpen.spotsLeft <= 5 ? "only " + firstOpen.spotsLeft + " spots left" : firstOpen.spotsLeft + " spots open");
+      "Next class: " + shortDate(firstOpen) + " · " + firstOpen.name;
     next.hidden = false;
   }
 
@@ -145,7 +143,7 @@
       if (c.price != null) {
         e.offers = {
           "@type": "Offer", url: c.checkout, price: String(c.price), priceCurrency: "USD",
-          availability: c.spotsLeft > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut"
+          availability: !c.soldOut ? "https://schema.org/InStock" : "https://schema.org/SoldOut"
         };
       }
       return e;

@@ -12,7 +12,8 @@
    start/end  24-hour time, Eastern.
    price      Optional. Leave out to use the class type's price.
    capacity   Total seats in the class.
-   spotsLeft  Update after each booking. 0 shows "Sold out".
+   soldOut    Optional. Add  soldOut: true  when a class fills up to show
+              "Sold out" and turn off its booking button.
    checkout   The Square payment link for this date.
    ========================================================================== */
 
@@ -51,7 +52,6 @@ window.RB_CLASSES = [
     start: "11:30",
     end: "14:00",
     capacity: 8,
-    spotsLeft: 8,
     checkout: "https://square.link/u/u55EVCgX"
   },
   {
@@ -60,7 +60,6 @@ window.RB_CLASSES = [
     start: "11:30",
     end: "14:00",
     capacity: 8,
-    spotsLeft: 8,
     checkout: "https://square.link/u/HLU89BJU"
   },
   {
@@ -69,7 +68,6 @@ window.RB_CLASSES = [
     start: "11:30",
     end: "14:00",
     capacity: 8,
-    spotsLeft: 8,
     checkout: "https://square.link/u/OfmqIkkx"
   },
   {
@@ -78,7 +76,6 @@ window.RB_CLASSES = [
     start: "11:30",
     end: "14:00",
     capacity: 8,
-    spotsLeft: 8,
     checkout: "https://square.link/u/VfluXijg"
   },
   {
@@ -87,7 +84,6 @@ window.RB_CLASSES = [
     start: "11:30",
     end: "14:00",
     capacity: 8,
-    spotsLeft: 8,
     checkout: "https://square.link/u/83UuduOD"
   },
   {
@@ -96,7 +92,6 @@ window.RB_CLASSES = [
     start: "11:30",
     end: "14:00",
     capacity: 8,
-    spotsLeft: 8,
     checkout: "https://square.link/u/mt5ob2nq"
   }
 ];
