@@ -50,7 +50,8 @@
 
   var now = new Date();
   var upcoming = classes
-    .filter(function (c) { return at(c.id, c.end) > now; })
+    // Bookable dates only: not yet ended, and has a Square link.
+    .filter(function (c) { return c.checkout && at(c.id, c.end) > now; })
     .sort(function (a, b) { return at(a.id, a.start) - at(b.id, b.start); });
 
   /* ---------- Small helpers ---------- */
@@ -168,7 +169,20 @@
     if (c) {
       document.querySelector("[data-when]").textContent = longDate(c) + " · " + timeRange(c);
       document.querySelector("[data-class-name]").textContent = c.name + (c.title ? ": " + c.title : "");
-      document.querySelector("[data-bring]").textContent = c.bring || "";
+      var bringEl = document.querySelector("[data-bring]");
+      if (c.bringList && c.bringList.length) {
+        var bl = document.querySelector("[data-bring-list]");
+        c.bringList.forEach(function (item) {
+          var li = document.createElement("li"); li.textContent = item; bl.appendChild(li);
+        });
+        bl.hidden = false; bringEl.hidden = true;
+      } else {
+        bringEl.textContent = c.bring || "";
+      }
+      if (c.provided) {
+        var pv = document.querySelector("[data-provided]");
+        pv.textContent = c.provided; pv.hidden = false;
+      }
       var prepList = document.querySelector("[data-prep]");
       if (prepList && c.prep && c.prep.length) {
         c.prep.forEach(function (item) {

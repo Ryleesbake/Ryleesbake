@@ -14,7 +14,8 @@
    capacity   Total seats in the class.
    soldOut    Optional. Add  soldOut: true  when a class fills up to show
               "Sold out" and turn off its booking button.
-   checkout   The Square payment link for this date.
+   checkout   The Square payment link for this date. Leave it out to keep a
+              date off the homepage while its booked page still works.
    ========================================================================== */
 
 window.RB_CLASS_TYPES = {
@@ -36,11 +37,15 @@ window.RB_CLASS_TYPES = {
     title: "Discard Recipes & Everyday Baking",
     price: 80,
     forWho: "For 101 grads, or anyone already keeping a starter",
-    bring: "Your Sourdough 101 kit (mixing bowl, proofing basket and tea towel) and your starter in a lidded jar, or the equivalent supplies if you have your own setup.",
-    prep: [
-      "The night before class, feed your starter so it's active and bubbly when you arrive. You'll use it to mix your own pizza dough.",
-      "Pack your Sourdough 101 kit and your starter so you don't forget them in the morning."
+    bring: "Your active starter (fed the night before), your mixing bowl and tea towel from your 101 kit, and a bag or box to carry things home.",
+    // Booked page only: full "What to bring" list and what's provided.
+    bringList: [
+      "Your active starter. Feed it the night before so it's bubbly by class time. You'll use it to mix your pizza dough.",
+      "Your mixing bowl from your 101 kit, or any medium bowl.",
+      "Your tea towel to cover your dough while it rests.",
+      "A bag or box to carry home your pizza dough and cinnamon roll."
     ],
+    provided: "We provide everything else: ingredients, prepped dough for the pretzel bites and cinnamon rolls, your take-home pan and cream cheese frosting, and the printed recipes.",
     afterClass: "Bake your cinnamon roll that evening and use your pizza dough within 3 days (keep it in the fridge). Then share how it turned out. The ideas below help this small business grow more than anything else."
   }
 };
