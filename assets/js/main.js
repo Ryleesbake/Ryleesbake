@@ -81,7 +81,7 @@
     var start = at(c.id, c.start);
     var cta = c.soldOut
       ? '<a class="btn btn--ghost btn--small" href="mailto:' + esc(info.email) + "?subject=" + encodeURIComponent("Waitlist for " + c.name + ", " + shortDate(c)) + '">Join the waitlist</a>'
-      : '<a class="btn btn--small" href="' + esc(c.checkout) + '" data-reserve="' + esc(c.type) + '" data-class="' + esc(c.id) + '">Reserve<span class="hide-sm"> my spot</span></a>';
+      : '<a class="btn btn--small" href="' + esc(c.checkout) + '" data-reserve="' + esc(c.type) + '" data-class="' + esc(c.id) + '"><span class="hide-sm">Reserve my spot</span><span class="show-sm">Reserve</span></a>';
     var bring = c.bringList && c.bringList.length
       ? "<ul>" + c.bringList.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" + (c.provided ? "<p>" + esc(c.provided) + "</p>" : "")
       : "<p>" + esc(c.bring || "") + "</p>";
@@ -112,8 +112,14 @@
   function classColumn(typeKey) {
     var t = types[typeKey] || {};
     var dates = upcoming.filter(function (c) { return c.type === typeKey; });
+    var rest = dates.length - 1;
     var body = dates.length
-      ? dates.map(classCard).join("")
+      ? '<p class="next-label">Next class</p>' + classCard(dates[0]) +
+        (rest > 0
+          ? '<div class="class-col__more">' + dates.slice(1).map(classCard).join("") + "</div>" +
+            '<button type="button" class="see-more" aria-expanded="false" data-more="' + rest + '">' +
+              "See " + rest + " more date" + (rest === 1 ? "" : "s") + " " + chev + "</button>"
+          : "")
       : '<div class="empty-state"><h4>New dates coming soon</h4><p>Follow <a href="' + esc(info.facebook) + '">Rylee\'s Bake on Facebook</a> to hear first.</p></div>';
     var from = t.price != null ? "$" + esc(t.price) + " · " : "";
     return (
@@ -150,6 +156,14 @@
     if (mobile.addEventListener) mobile.addEventListener("change", setCols);
     list.addEventListener("click", function (ev) {
       if (!mobile.matches && ev.target.closest(".class-col__head")) ev.preventDefault();
+      var more = ev.target.closest(".see-more");
+      if (more) {
+        var col = more.closest(".class-col");
+        var showing = col.classList.toggle("show-all");
+        var n = more.getAttribute("data-more");
+        more.setAttribute("aria-expanded", showing ? "true" : "false");
+        more.firstChild.textContent = showing ? "Show fewer dates " : "See " + n + " more date" + (n === "1" ? "" : "s") + " ";
+      }
     });
 
     // 201 check before checkout
@@ -168,7 +182,7 @@
       dlg.querySelector("[data-see-101]").addEventListener("click", function () {
         dlg.close();
         var col = document.getElementById("dates-101");
-        if (col) col.open = true;
+        if (col) { col.open = true; col.classList.add("show-all"); }
         if (col) col.scrollIntoView({ behavior: "smooth", block: "start" });
       });
       dlg.querySelector("[data-close]").addEventListener("click", function () { dlg.close(); });
