@@ -80,21 +80,19 @@
   function classCard(c) {
     var start = at(c.id, c.start);
     var cta = c.soldOut
-      ? '<a class="btn btn--ghost" href="mailto:' + esc(info.email) + "?subject=" + encodeURIComponent("Waitlist for " + c.name + ", " + shortDate(c)) + '">Join the waitlist</a>'
-      : '<a class="btn" href="' + esc(c.checkout) + '" data-reserve="' + esc(c.type) + '" data-class="' + esc(c.id) + '">Reserve my spot</a>';
-    var price = c.price != null ? '<p class="price">$' + esc(c.price) + "<small>per person</small></p>" : "";
+      ? '<a class="btn btn--ghost btn--small" href="mailto:' + esc(info.email) + "?subject=" + encodeURIComponent("Waitlist for " + c.name + ", " + shortDate(c)) + '">Join the waitlist</a>'
+      : '<a class="btn btn--small" href="' + esc(c.checkout) + '" data-reserve="' + esc(c.type) + '" data-class="' + esc(c.id) + '">Reserve<span class="hide-sm"> my spot</span></a>';
     var bring = c.bringList && c.bringList.length
       ? "<ul>" + c.bringList.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" + (c.provided ? "<p>" + esc(c.provided) + "</p>" : "")
       : "<p>" + esc(c.bring || "") + "</p>";
     return (
       '<article class="class-card">' +
-        '<div class="class-card__date">' +
+        '<div class="class-card__row">' +
           '<div class="cal" aria-hidden="true"><span class="cal__month">' + fmt(start, { month: "short" }) + '</span><span class="cal__day">' + fmt(start, { day: "numeric" }) + "</span></div>" +
-          "<div><h4>" + longDate(c) + "</h4>" +
-          '<p class="class-card__time">' + timeRange(c) + " · Clermont, FL</p></div>" +
-          spotsBadge(c) +
+          '<div class="class-card__info"><h4><span class="hide-sm">' + longDate(c) + '</span><span class="show-sm">' + shortDate(c) + "</span></h4>" +
+          '<p class="class-card__time">' + timeRange(c) + (c.price != null ? ' · <strong>$' + esc(c.price) + "</strong><span class=\"hide-sm\"> per person</span>" : "") + "</p></div>" +
+          (c.soldOut ? spotsBadge(c) : "") + cta +
         "</div>" +
-        '<div class="class-card__foot">' + price + cta + "</div>" +
         '<details class="class-card__more">' +
           "<summary>Class details " + chev + "</summary>" +
           '<div class="class-card__more-body">' +
@@ -117,15 +115,19 @@
     var body = dates.length
       ? dates.map(classCard).join("")
       : '<div class="empty-state"><h4>New dates coming soon</h4><p>Follow <a href="' + esc(info.facebook) + '">Rylee\'s Bake on Facebook</a> to hear first.</p></div>';
+    var from = t.price != null ? "$" + esc(t.price) + " · " : "";
     return (
-      '<div class="class-col" id="dates-' + esc(typeKey) + '">' +
-        '<div class="class-col__head">' +
-          '<p class="class-card__name">' + esc(t.name || "") + "</p>" +
-          "<h3>" + esc(t.title || "") + "</h3>" +
-          '<p class="class-col__for">' + esc(t.forWho || "") + "</p>" +
-        "</div>" +
+      '<details class="class-col" id="dates-' + esc(typeKey) + '" open>' +
+        '<summary class="class-col__head">' +
+          '<span class="class-col__text">' +
+            '<span class="class-card__name">' + esc(t.name || "") + "</span>" +
+            '<span class="class-col__title">' + esc(t.title || "") + "</span>" +
+            '<span class="class-col__for">' + from + esc(t.forWho || "") + "</span>" +
+          "</span>" +
+          '<span class="class-col__toggle btn btn--small"><span class="when-closed">See ' + dates.length + " date" + (dates.length === 1 ? "" : "s") + '</span><span class="when-open">Hide dates</span></span>' +
+        "</summary>" +
         '<div class="class-col__cards">' + body + "</div>" +
-      "</div>"
+      "</details>"
     );
   }
 
@@ -138,6 +140,17 @@
     } else {
       list.innerHTML = classColumn("101") + classColumn("201");
     }
+
+    // Phones: both classes start collapsed so 101 and 201 are visible together.
+    // Desktop: both columns stay open and the headers don't toggle.
+    var mobile = window.matchMedia("(max-width: 820px)");
+    var cols = list.querySelectorAll(".class-col");
+    function setCols() { cols.forEach(function (d) { d.open = !mobile.matches; }); }
+    setCols();
+    if (mobile.addEventListener) mobile.addEventListener("change", setCols);
+    list.addEventListener("click", function (ev) {
+      if (!mobile.matches && ev.target.closest(".class-col__head")) ev.preventDefault();
+    });
 
     // 201 check before checkout
     var dlg = document.getElementById("confirm-201");
@@ -155,6 +168,7 @@
       dlg.querySelector("[data-see-101]").addEventListener("click", function () {
         dlg.close();
         var col = document.getElementById("dates-101");
+        if (col) col.open = true;
         if (col) col.scrollIntoView({ behavior: "smooth", block: "start" });
       });
       dlg.querySelector("[data-close]").addEventListener("click", function () { dlg.close(); });
