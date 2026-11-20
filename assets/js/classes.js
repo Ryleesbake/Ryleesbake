@@ -98,6 +98,30 @@ window.RB_CLASSES = [
     end: "14:00",
     capacity: 8,
     checkout: "https://square.link/u/mt5ob2nq"
+  },
+  {
+    id: "2027-02-20",
+    type: "201",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8
+    // checkout: "https://square.link/u/..."  (add to show on the homepage)
+  },
+  {
+    id: "2027-04-24",
+    type: "201",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8
+    // checkout: "https://square.link/u/..."  (add to show on the homepage)
+  },
+  {
+    id: "2027-06-26",
+    type: "201",
+    start: "11:30",
+    end: "14:00",
+    capacity: 8
+    // checkout: "https://square.link/u/..."  (add to show on the homepage)
   }
 ];
 
