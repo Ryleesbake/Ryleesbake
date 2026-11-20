@@ -72,9 +72,63 @@
     return c.soldOut ? '<span class="badge badge--calm">Sold out</span>' : "";
   }
 
-  /* ---------- Home page: class cards ---------- */
+  /* ---------- Home page: class columns ---------- */
 
   var list = document.getElementById("class-list");
+  var chev = '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+  function classCard(c) {
+    var start = at(c.id, c.start);
+    var cta = c.soldOut
+      ? '<a class="btn btn--ghost" href="mailto:' + esc(info.email) + "?subject=" + encodeURIComponent("Waitlist for " + c.name + ", " + shortDate(c)) + '">Join the waitlist</a>'
+      : '<a class="btn" href="' + esc(c.checkout) + '" data-reserve="' + esc(c.type) + '" data-class="' + esc(c.id) + '">Reserve my spot</a>';
+    var price = c.price != null ? '<p class="price">$' + esc(c.price) + "<small>per person</small></p>" : "";
+    var bring = c.bringList && c.bringList.length
+      ? "<ul>" + c.bringList.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" + (c.provided ? "<p>" + esc(c.provided) + "</p>" : "")
+      : "<p>" + esc(c.bring || "") + "</p>";
+    return (
+      '<article class="class-card">' +
+        '<div class="class-card__date">' +
+          '<div class="cal" aria-hidden="true"><span class="cal__month">' + fmt(start, { month: "short" }) + '</span><span class="cal__day">' + fmt(start, { day: "numeric" }) + "</span></div>" +
+          "<div><h4>" + longDate(c) + "</h4>" +
+          '<p class="class-card__time">' + timeRange(c) + " · Clermont, FL</p></div>" +
+          spotsBadge(c) +
+        "</div>" +
+        '<div class="class-card__foot">' + price + cta + "</div>" +
+        '<details class="class-card__more">' +
+          "<summary>Class details " + chev + "</summary>" +
+          '<div class="class-card__more-body">' +
+            '<ul class="class-card__meta">' +
+              "<li>" + icon.clock + timeRange(c) + " · " + duration(c) + "</li>" +
+              "<li>" + icon.pin + "Clermont, FL · exact address on your confirmation page</li>" +
+              "<li>" + icon.seat + "Small group, " + esc(c.capacity) + " students max</li>" +
+            "</ul>" +
+            (c.forWho ? '<p class="more-label">Who it\'s for</p><p>' + esc(c.forWho) + ".</p>" : "") +
+            '<p class="more-label">What to bring</p>' + bring +
+          "</div>" +
+        "</details>" +
+      "</article>"
+    );
+  }
+
+  function classColumn(typeKey) {
+    var t = types[typeKey] || {};
+    var dates = upcoming.filter(function (c) { return c.type === typeKey; });
+    var body = dates.length
+      ? dates.map(classCard).join("")
+      : '<div class="empty-state"><h4>New dates coming soon</h4><p>Follow <a href="' + esc(info.facebook) + '">Rylee\'s Bake on Facebook</a> to hear first.</p></div>';
+    return (
+      '<div class="class-col" id="dates-' + esc(typeKey) + '">' +
+        '<div class="class-col__head">' +
+          '<p class="class-card__name">' + esc(t.name || "") + "</p>" +
+          "<h3>" + esc(t.title || "") + "</h3>" +
+          '<p class="class-col__for">' + esc(t.forWho || "") + "</p>" +
+        "</div>" +
+        '<div class="class-col__cards">' + body + "</div>" +
+      "</div>"
+    );
+  }
+
   if (list) {
     if (!upcoming.length) {
       list.innerHTML =
@@ -82,31 +136,29 @@
         '<p>Follow along on <a href="' + esc(info.facebook) + '">Facebook</a> to hear first, or email ' +
         '<a href="mailto:' + esc(info.email) + '">' + esc(info.email) + "</a> to get on the list.</p></div>";
     } else {
-      list.innerHTML = upcoming.map(function (c) {
-        var start = at(c.id, c.start);
-        var soldOut = !!c.soldOut;
-        var cta = soldOut
-          ? '<a class="btn btn--ghost" href="mailto:' + esc(info.email) + "?subject=" + encodeURIComponent("Waitlist for " + shortDate(c)) + '">Join the waitlist</a>'
-          : '<a class="btn" href="' + esc(c.checkout) + '" data-class="' + esc(c.id) + '">Reserve my spot</a>';
-        var price = c.price != null ? '<p class="price">$' + esc(c.price) + "<small>per person</small></p>" : "";
-        return (
-          '<article class="class-card">' +
-            '<div class="class-card__top"><span class="class-card__name">' + esc(c.name) + "</span>" + spotsBadge(c) + "</div>" +
-            '<div class="class-card__date">' +
-              '<div class="cal" aria-hidden="true"><span class="cal__month">' + fmt(start, { month: "short" }) + '</span><span class="cal__day">' + fmt(start, { day: "numeric" }) + "</span></div>" +
-              "<div><h3>" + longDate(c) + "</h3>" +
-              (c.title ? '<p class="class-card__title">' + esc(c.title) + "</p>" : "") + "</div>" +
-            "</div>" +
-            '<ul class="class-card__meta">' +
-              "<li>" + icon.clock + timeRange(c) + " · " + duration(c) + "</li>" +
-              "<li>" + icon.pin + "Clermont, FL · address sent after booking</li>" +
-              "<li>" + icon.seat + "Small group, " + c.capacity + " seats total</li>" +
-            "</ul>" +
-            (c.forWho ? '<p class="class-card__for"><strong>' + esc(c.forWho) + ".</strong> Bring: " + esc(c.bring) + "</p>" : "") +
-            '<div class="class-card__foot">' + price + cta + "</div>" +
-          "</article>"
-        );
-      }).join("");
+      list.innerHTML = classColumn("101") + classColumn("201");
+    }
+
+    // 201 check before checkout
+    var dlg = document.getElementById("confirm-201");
+    if (dlg && typeof dlg.showModal === "function") {
+      var go = dlg.querySelector("[data-continue]");
+      list.addEventListener("click", function (ev) {
+        var btn = ev.target.closest('[data-reserve="201"]');
+        if (!btn) return;
+        ev.preventDefault();
+        var c = classes.filter(function (x) { return x.id === btn.getAttribute("data-class"); })[0];
+        dlg.querySelector("[data-confirm-date]").textContent = c ? longDate(c) : "";
+        go.href = btn.href;
+        dlg.showModal();
+      });
+      dlg.querySelector("[data-see-101]").addEventListener("click", function () {
+        dlg.close();
+        var col = document.getElementById("dates-101");
+        if (col) col.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      dlg.querySelector("[data-close]").addEventListener("click", function () { dlg.close(); });
+      dlg.addEventListener("click", function (ev) { if (ev.target === dlg) dlg.close(); });
     }
   }
 
